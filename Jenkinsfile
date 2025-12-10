@@ -4,6 +4,9 @@ pipeline {
     tools {
         maven "M2_HOME"
     }
+    environment {
+        DOCKER_CREDENTIALS = credentials('Docker-Hub')
+    }
 
     stages {
         stage("Code Checkout") {
@@ -25,6 +28,7 @@ pipeline {
             }
         }
 
+
         stage('Sonar Test'){
             steps {
                 withSonarQubeEnv('sq1') {
@@ -32,4 +36,21 @@ pipeline {
                 }
             }
         }
+
+		stage('Docker Build') {
+            steps {
+                script {
+                    sh "docker build -t lumenu/student-management:1.0 ."
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    sh 'echo $DOCKER_CREDENTIALS_PSW | docker login -u $DOCKER_CREDENTIALS_USR --password-stdin'
+                    sh "docker push lumenu/student-management:1.0"
+                }
+            }
+	}
 }}
