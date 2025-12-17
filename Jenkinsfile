@@ -53,4 +53,12 @@ pipeline {
                 }
             }
 	}
+	stage('Kubernetes Deployment'){
+            steps{
+                script{
+                    sh "kubectl apply -f k8s/spring-deployment.yaml -n devops"
+                    sh "kubectl apply -f k8s/mysql-deployment.yaml -n devops"
+                                  }
+                           }
+            }
 }}
